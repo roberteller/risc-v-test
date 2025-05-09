@@ -1,0 +1,49 @@
+// Simple test program that performs basic arithmetic operations
+// ADDI x1, x0, 5    // x1 = 5
+00500093
+// ADDI x2, x0, 3    // x2 = 3
+00300113
+// ADD x3, x1, x2    // x3 = x1 + x2
+002081B3
+// SUB x4, x1, x2    // x4 = x1 - x2
+40208233
+// AND x5, x1, x2    // x5 = x1 & x2
+0020F2B3
+// OR x6, x1, x2     // x6 = x1 | x2
+0020E333
+// XOR x7, x1, x2    // x7 = x1 ^ x2
+0020C3B3
+// SLT x8, x1, x2    // x8 = (x1 < x2) ? 1 : 0
+0020A433
+// SLTU x9, x1, x2   // x9 = (x1 < x2) ? 1 : 0 (unsigned)
+0020B4B3
+// SLL x10, x1, x2   // x10 = x1 << x2
+00209533
+// SRL x11, x1, x2   // x11 = x1 >> x2
+0020D5B3
+// SRA x12, x1, x2   // x12 = x1 >> x2 (arithmetic)
+4020D633
+// JAL x13, 16       // x13 = pc + 4, pc = pc + 16
+010006EF
+// JALR x14, x1, 0   // x14 = pc + 4, pc = x1
+00008767
+// BEQ x1, x2, 16    // if (x1 == x2) pc = pc + 16
+00208063
+// BNE x1, x2, 16    // if (x1 != x2) pc = pc + 16
+00209063
+// BLT x1, x2, 16    // if (x1 < x2) pc = pc + 16
+0020A063
+// BGE x1, x2, 16    // if (x1 >= x2) pc = pc + 16
+0020D063
+// BLTU x1, x2, 16   // if (x1 < x2) pc = pc + 16 (unsigned)
+0020E063
+// BGEU x1, x2, 16   // if (x1 >= x2) pc = pc + 16 (unsigned)
+0020F063
+// LW x15, 0(x0)     // x15 = mem[x0 + 0]
+00002783
+// SW x1, 0(x0)      // mem[x0 + 0] = x1
+00102023
+// LUI x16, 0x12345  // x16 = 0x12345000
+12345837
+// AUIPC x17, 0x12345 // x17 = pc + 0x12345000
+12345897 

@@ -1,0 +1,45 @@
+# Simulation artifacts
+*.vcd
+*.log
+*.jou
+*.rpt
+*.wcfg
+*.wdb
+*.pb
+*.wcfg
+*.wcfg.jou
+*.wcfg.wdb
+*.wcfg.wcfg
+*.wcfg.wcfg.jou
+*.wcfg.wcfg.wdb
+*.wcfg.wcfg.wcfg
+*.wcfg.wcfg.wcfg.jou
+*.wcfg.wcfg.wcfg.wdb
+*.wcfg.wcfg.wcfg.wcfg
+*.wcfg.wcfg.wcfg.wcfg.jou
+*.wcfg.wcfg.wcfg.wcfg.wdb
+
+# Build directories
+build/
+sim/
+synth/
+impl/
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Simulation results
+sim_results/
+wave/ 
