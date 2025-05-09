@@ -33,6 +33,19 @@ This documentation provides comprehensive information about the RISC-V multicore
 - Verification methodology
 - Build automation
 
+### 4. [Modern Processor Features](modern_features.md)
+- Advanced pipeline features
+- Memory hierarchy
+- Power management
+- Security features
+- Advanced instruction sets
+- Interconnect and communication
+- Performance monitoring
+- Debug and trace
+- Reliability features
+- Virtualization support
+- Future trends
+
 ## Quick Start
 
 ### Prerequisites
