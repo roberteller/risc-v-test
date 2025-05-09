@@ -6,7 +6,7 @@ module ooo_execution_unit #(
     parameter LSQ_ENTRIES = 32,
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 32,
-    parameter TAG_WIDTH = 5,
+    parameter TAG_WIDTH = 6,
     parameter ROB_PTR_WIDTH = $clog2(ROB_ENTRIES),
     parameter RS_PTR_WIDTH = $clog2(RS_ENTRIES),
     parameter LSQ_PTR_WIDTH = $clog2(LSQ_ENTRIES)
@@ -69,8 +69,7 @@ module ooo_execution_unit #(
     // RS signals
     logic                     rs_dispatch_valid;
     logic                     rs_dispatch_ready;
-    logic [TAG_WIDTH-1:0]     rs_dispatch_tag;
-    logic [TAG_WIDTH-1:0]     rs_dispatch_phys_reg;
+    logic [5:0]              rs_dispatch_tag;
     logic                     exec_valid;
     logic [31:0]             exec_instruction;
     logic [DATA_WIDTH-1:0]    exec_rs1_data;
@@ -80,7 +79,6 @@ module ooo_execution_unit #(
     // LSQ signals
     logic                     lsq_dispatch_valid;
     logic                     lsq_dispatch_ready;
-    logic [TAG_WIDTH-1:0]     lsq_dispatch_tag;
     logic                     lsq_full;
     logic                     lsq_empty;
     
@@ -115,7 +113,6 @@ module ooo_execution_unit #(
         .clk(clk),
         .rst_n(rst_n),
         .dispatch_valid(dispatch_valid),
-        .dispatch_ready(dispatch_ready),
         .dispatch_tag(dispatch_rob_tag),
         .dispatch_phys_reg(dispatch_phys_reg),
         .dispatch_is_load(dispatch_is_load),
@@ -163,7 +160,6 @@ module ooo_execution_unit #(
         .clk(clk),
         .rst_n(rst_n),
         .dispatch_valid(dispatch_valid),
-        .dispatch_ready(dispatch_ready),
         .rename_rs1(rename_rs1),
         .rename_rs2(rename_rs2),
         .rename_rd(rename_rd),
@@ -249,7 +245,11 @@ module ooo_execution_unit #(
                 dispatch_addr = rf_read_data1 + {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
                 dispatch_store_data = rf_read_data2;
             end
-            // Add other instruction types here
+            default: begin // Other instructions
+                dispatch_valid = 1'b1;
+                dispatch_is_load = 1'b0;
+                dispatch_is_store = 1'b0;
+            end
         endcase
     end
     
@@ -273,6 +273,12 @@ module ooo_execution_unit #(
     // Drive dispatch signals
     assign rs_dispatch_valid = dispatch_valid && !dispatch_is_load && !dispatch_is_store;
     assign lsq_dispatch_valid = dispatch_valid && (dispatch_is_load || dispatch_is_store);
+
+    // Drive dispatch_ready signal
+    assign dispatch_ready = !rob_full && free_list_valid;
+
+    // Drive dispatch_rob_tag signal
+    assign dispatch_rob_tag = rename_rd_tag;
 
     // Drive writeback signals
     always_ff @(posedge clk or negedge rst_n) begin

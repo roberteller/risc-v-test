@@ -51,7 +51,7 @@ module load_store_queue #(
     logic [LSQ_PTR_WIDTH:0]       count;
     
     // Status signals
-    assign full = (count == LSQ_PTR_WIDTH'(LSQ_ENTRIES));
+    assign full = (count == (LSQ_PTR_WIDTH+1)'(LSQ_ENTRIES + 1));
     assign empty = (count == '0);
     
     // Dispatch ready signal

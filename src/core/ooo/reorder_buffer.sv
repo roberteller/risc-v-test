@@ -8,7 +8,6 @@ module reorder_buffer #(
     
     // Dispatch interface
     input  logic                     dispatch_valid,
-    output logic                     dispatch_ready,
     input  logic [TAG_WIDTH-1:0]     dispatch_tag,
     input  logic [TAG_WIDTH-1:0]     dispatch_phys_reg,
     input  logic                     dispatch_is_load,
@@ -45,9 +44,6 @@ module reorder_buffer #(
     // Status signals
     assign full  = (count == ROB_ENTRIES);
     assign empty = (count == 0);
-    
-    // Dispatch ready signal
-    assign dispatch_ready = !full;
     
     // ROB management
     always_ff @(posedge clk or negedge rst_n) begin

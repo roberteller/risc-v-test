@@ -27,13 +27,13 @@ module free_list #(
     
     // Status signals
     assign empty = (count == '0);
-    assign full  = (count == TAG_WIDTH'(NUM_PHYSICAL_REGS));
+    assign full  = (count == (TAG_WIDTH+1)'(NUM_PHYSICAL_REGS));
     
     // Read valid signal
     assign read_valid = !empty;
     
     // Read tag output
-    assign read_tag = free_list_storage[head_ptr];
+    assign read_tag = free_list_storage[head_ptr[TAG_WIDTH-1:0]];
     
     // Free list management
     always_ff @(posedge clk or negedge rst_n) begin
@@ -44,7 +44,7 @@ module free_list #(
             end
             head_ptr <= '0;
             tail_ptr <= TAG_WIDTH'(NUM_PHYSICAL_REGS - 32);
-            count    <= TAG_WIDTH'(NUM_PHYSICAL_REGS - 32);
+            count    <= (TAG_WIDTH+1)'(NUM_PHYSICAL_REGS - 32);
         end else begin
             // Read from free list
             if (read && read_valid) begin
@@ -54,7 +54,7 @@ module free_list #(
             
             // Return to free list
             if (return_valid) begin
-                free_list_storage[tail_ptr] <= return_tag;
+                free_list_storage[tail_ptr[TAG_WIDTH-1:0]] <= return_tag;
                 tail_ptr <= tail_ptr + TAG_WIDTH'(1);
                 count    <= count + TAG_WIDTH'(1);
             end

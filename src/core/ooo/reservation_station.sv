@@ -2,7 +2,7 @@ module reservation_station #(
     parameter RS_ENTRIES = 32,
     parameter RS_PTR_WIDTH = $clog2(RS_ENTRIES),
     parameter DATA_WIDTH = 32,
-    parameter TAG_WIDTH = 5
+    parameter TAG_WIDTH = 6
 )(
     input  logic                     clk,
     input  logic                     rst_n,

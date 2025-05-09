@@ -1,6 +1,6 @@
 # Compiler and flags
 VERILATOR = verilator
-VERILATOR_FLAGS = --sv --assert --trace --timing --coverage --binary -j 0 -Wall
+VERILATOR_FLAGS = --sv --assert --trace --timing --coverage --binary -j 0 -Wall -Wno-UNUSEDSIGNAL -Wno-WIDTHTRUNC -Wno-SYNCASYNCNET
 
 # Source files
 SRC_FILES = \
