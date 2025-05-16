@@ -1,19 +1,22 @@
-# Compiler and flags
+# Compiler and simulator settings
 IVERILOG = iverilog
-IVERILOG_FLAGS = -g2012 -I$(SRC_DIR)
 VVP = vvp
 GTKWAVE = gtkwave
 
 # Source files
 SRC_DIR = src
-TEST_DIR = test
-SRC_FILES = $(wildcard $(SRC_DIR)/*.sv)
-TEST_FILES = $(wildcard $(TEST_DIR)/*.sv)
+TB_DIR = src/tb
+MEM_DIR = src/memory
+
+# Source files
+SRC_FILES = \
+    $(MEM_DIR)/dram_controller.sv \
+    $(TB_DIR)/dram_controller_tb.sv
 
 # Output files
 SIM_DIR = sim
-VCD_FILE = $(SIM_DIR)/riscv.vcd
-EXEC_FILE = $(SIM_DIR)/riscv
+VCD_FILE = $(SIM_DIR)/dram_controller.vcd
+EXEC_FILE = $(SIM_DIR)/dram_controller
 
 # Default target
 all: compile run
@@ -22,9 +25,9 @@ all: compile run
 $(SIM_DIR):
 	mkdir -p $(SIM_DIR)
 
-# Compile
+# Compile the design
 compile: $(SIM_DIR)
-	$(IVERILOG) $(IVERILOG_FLAGS) -o $(EXEC_FILE) $(SRC_FILES) $(TEST_FILES)
+	$(IVERILOG) -g2012 -I$(SRC_DIR) -o $(EXEC_FILE) $(SRC_FILES)
 
 # Run simulation
 run: compile
@@ -34,22 +37,10 @@ run: compile
 wave: run
 	$(GTKWAVE) $(VCD_FILE)
 
-# Clean
+# Clean generated files
 clean:
 	rm -rf $(SIM_DIR)
+	rm -rf *.vcd
+	rm -rf *.log
 
-# Multicore test
-multicore_test: sim/multicore
-	./sim/multicore
-
-sim/multicore: src/alu.sv src/control_unit.sv src/csr.sv src/immediate_generator.sv src/register_file.sv src/riscv_core.sv src/multicore.sv test/multicore_tb.sv
-	$(IVERILOG) -g2012 -Isrc -o sim/multicore src/alu.sv src/control_unit.sv src/csr.sv src/immediate_generator.sv src/register_file.sv src/riscv_core.sv src/multicore.sv test/multicore_tb.sv
-
-# Comprehensive test suite
-testsuite: sim/testsuite
-	./sim/testsuite
-
-sim/testsuite: src/alu.sv src/control_unit.sv src/csr.sv src/immediate_generator.sv src/register_file.sv src/riscv_core.sv src/multicore.sv test/riscv_testsuite.sv
-	$(IVERILOG) -g2012 -Isrc -o sim/testsuite src/alu.sv src/control_unit.sv src/csr.sv src/immediate_generator.sv src/register_file.sv src/riscv_core.sv src/multicore.sv test/riscv_testsuite.sv
-
-.PHONY: all compile run wave clean multicore_test testsuite 
+.PHONY: all compile run wave clean 
