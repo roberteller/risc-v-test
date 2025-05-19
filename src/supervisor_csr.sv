@@ -169,19 +169,35 @@ module supervisor_csr #(
                 sepc_reg <= exception_pc;
                 
                 // Update sstatus
-                sstatus_t new_sstatus;
-                new_sstatus = sstatus;
-                new_sstatus.spp = current_mode[0];  // Save previous privilege (only bit 0)
-                new_sstatus.spie = sstatus.sie;     // Save previous interrupt enable
-                new_sstatus.sie = 1'b0;             // Disable interrupts
-                sstatus_reg <= new_sstatus;
+                // Create a local variable for the modified status
+                logic [DATA_WIDTH-1:0] new_sstatus_reg;
+                new_sstatus_reg = sstatus_reg;
+                
+                // Modify using bit-field assignments compatible with Verilator
+                // Extract and modify sstatus fields
+                sstatus_t temp_sstatus;
+                temp_sstatus = sstatus_reg;
+                temp_sstatus.spp = current_mode[0];  // Save previous privilege (only bit 0)
+                temp_sstatus.spie = temp_sstatus.sie;  // Save previous interrupt enable
+                temp_sstatus.sie = 1'b0;              // Disable interrupts
+                new_sstatus_reg = temp_sstatus;
+                
+                // Update the register
+                sstatus_reg <= new_sstatus_reg;
                 
                 // Update scause
-                scause_t new_scause;
-                new_scause.interrupt = (exception_code >= 4'h8);
-                new_scause.reserved_high = '0;
-                new_scause.code = exception_code;
-                scause_reg <= new_scause;
+                // Create a local variable for the modified status
+                logic [DATA_WIDTH-1:0] new_scause_reg;
+                new_scause_reg = 64'h0;
+                
+                // Set fields directly in a Verilator-compatible way
+                scause_t temp_scause;
+                temp_scause.interrupt = (exception_code >= 4'h8);
+                temp_scause.reserved_high = '0;
+                temp_scause.code = exception_code;
+                new_scause_reg = temp_scause;
+                
+                scause_reg <= new_scause_reg;
                 
                 // Update stval with exception-specific value
                 stval_reg <= exception_value;
@@ -190,12 +206,19 @@ module supervisor_csr #(
             // Handle SRET (return from exception)
             if (return_from_exception) begin
                 // Update sstatus
-                sstatus_t new_sstatus;
-                new_sstatus = sstatus;
-                new_sstatus.sie = sstatus.spie;     // Restore previous interrupt enable
-                new_sstatus.spie = 1'b1;            // Set SPIE to 1
-                new_sstatus.spp = 1'b0;             // Clear SPP (return to U-mode)
-                sstatus_reg <= new_sstatus;
+                // Create a local variable for the modified status
+                logic [DATA_WIDTH-1:0] new_sstatus_reg;
+                
+                // Extract and modify sstatus fields
+                sstatus_t temp_sstatus;
+                temp_sstatus = sstatus_reg;
+                temp_sstatus.sie = temp_sstatus.spie;  // Restore previous interrupt enable
+                temp_sstatus.spie = 1'b1;              // Set SPIE to 1
+                temp_sstatus.spp = 1'b0;               // Clear SPP (return to U-mode)
+                new_sstatus_reg = temp_sstatus;
+                
+                // Update the register
+                sstatus_reg <= new_sstatus_reg;
             end
             
             // CSR write operations
