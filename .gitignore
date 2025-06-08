@@ -25,6 +25,7 @@ sim/
 synth/
 impl/
 test/
+obj_dir/
 
 
 

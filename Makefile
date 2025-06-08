@@ -108,12 +108,56 @@ coremark_build:
 coremark_test: coremark_build
 	cd benchmarks/build && spike --isa=rv64gc coremark.elf
 
+# Complete System Tests
+test_system_complete:
+	@echo "Testing complete Linux system with all components..."
+	$(VERILATOR) $(VERILATOR_FLAGS) src/linux_system_complete.sv \
+		src/peripherals/clint.sv src/peripherals/plic.sv \
+		src/peripherals/virtio_blk.sv src/peripherals/virtio_net.sv \
+		src/sbi/opensbi_handler.sv test/test_system_complete.cpp
+	cd sim/verilator && ./linux_system_complete
+
+test_clint:
+	@echo "Testing CLINT controller..."
+	$(VERILATOR) $(VERILATOR_FLAGS) src/peripherals/clint.sv test/test_clint.cpp
+	cd sim/verilator && ./clint
+
+test_plic:
+	@echo "Testing PLIC controller..."
+	$(VERILATOR) $(VERILATOR_FLAGS) src/peripherals/plic.sv test/test_plic.cpp
+	cd sim/verilator && ./plic
+
+test_virtio:
+	@echo "Testing VirtIO devices..."
+	$(VERILATOR) $(VERILATOR_FLAGS) src/peripherals/virtio_blk.sv test/test_virtio_blk.cpp
+	$(VERILATOR) $(VERILATOR_FLAGS) src/peripherals/virtio_net.sv test/test_virtio_net.cpp
+	cd sim/verilator && ./virtio_blk && ./virtio_net
+
+test_opensbi:
+	@echo "Testing OpenSBI handler..."
+	$(VERILATOR) $(VERILATOR_FLAGS) src/sbi/opensbi_handler.sv test/test_opensbi.cpp
+	cd sim/verilator && ./opensbi_handler
+
 # Linux Build
 linux_build:
 	cd linux && chmod +x build_linux.sh && ./build_linux.sh
 
 linux_test_qemu:
 	cd linux/build/output && ./test_qemu.sh
+
+linux_boot_test:
+	@echo "Testing Linux boot on complete system..."
+	$(MAKE) test_system_complete
+	cd benchmarks && python3 linux_boot_test.py
+
+# System Validation
+validate_system:
+	@echo "Running comprehensive system validation..."
+	python3 test/validate_linux_system.py
+
+validate_quick:
+	@echo "Running quick validation (syntax and compilation only)..."
+	python3 test/validate_linux_system.py --quick
 
 # Debian Support (Future)
 debian_setup:
@@ -143,4 +187,4 @@ clean_all: clean
 	rm -rf syn/
 	rm -rf reports/
 
-.PHONY: all compile run wave clean clean_all test unit_test integration_test functional_test regression_test verilator_test verilator_clean list_tests compliance_test compliance_rv64ui compliance_rv64um compliance_rv64ua compliance_all coremark_build coremark_test linux_build linux_test_qemu debian_setup synth_fpga perf_analysis
+.PHONY: all compile run wave clean clean_all test unit_test integration_test functional_test regression_test verilator_test verilator_clean list_tests compliance_test compliance_rv64ui compliance_rv64um compliance_rv64ua compliance_all coremark_build coremark_test test_system_complete test_clint test_plic test_virtio test_opensbi linux_build linux_test_qemu linux_boot_test debian_setup synth_fpga perf_analysis
