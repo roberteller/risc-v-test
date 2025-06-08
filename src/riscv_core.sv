@@ -256,7 +256,6 @@ module riscv_core #(
         .csr_write(csr_write),
         .csr_op(csr_op),
         .is_fence(is_fence),
-        .is_fence_i(is_fence_i),
         .is_ecall(is_ecall),
         .is_ebreak(is_ebreak),
         .is_mret(is_mret),
