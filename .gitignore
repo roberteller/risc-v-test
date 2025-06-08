@@ -24,6 +24,9 @@ build/
 sim/
 synth/
 impl/
+test/
+
+
 
 # IDE specific files
 .vscode/
